@@ -14,3 +14,5 @@
 可以log一下`request.constructor`就可以发现了,那么为什么需要声明类型呢？因为可以自动提示！
 
 然后可以`curl http:localhost:8888/xxx`
+
+同理 `response` 的类型是什么呢？——`ServerResponse`
