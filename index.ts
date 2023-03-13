@@ -23,10 +23,23 @@ server.on('request', (request: IncomingMessage, response: ServerResponse) => {
     // response.setHeader('Content-Type', 'text/html;charset-utf-8');
     fs.readFile(p.resolve(publicDir, filename), (error, data) => {
         if (error) {
-            response.statusCode = 404
-            response.end('当前文件不存在')
+            console.log(error)
+            if(error.errno === -4058){
+                // 这种错误才是文件不存在
+                response.statusCode = 404
+                fs.readFile(p.resolve(publicDir,'404.html'),(error,data)=>{
+                    response.end(data)
+                })
+            }else if(error.errno === -4068){
+                response.statusCode = 403
+                response.end('无权查看目录内容')
+            }else{
+                response.statusCode = 500
+                response.end('服务器繁忙')
+            }
+        }else{
+            response.end(data);
         }
-        response.end(data.toString());
     });
 })
 ;
