@@ -22,5 +22,24 @@
 发现这是一个 GET 请求，那么如何发一个 POST 请求？
 `curl -v -d "name-nihao" http://localhost:8888`
 
-## 如何得到请求消息体
-刚才发现 headers 里面没有请求的内容
+### 如何得到请求消息体
+刚才发现 headers 里面没有请求的内容,如何获取？
+```ts
+// 获取请求体数据
+const array:any = []
+request.on('data',(chunk)=>{
+    console.log(chunk)
+    array.push(chunk)
+})
+```
+那么我什么时候知道事件结束呢？
+```ts
+request.on('end',()=>{
+    const body = Buffer.concat(array).toString()
+    console.log('body')
+    console.log(body)
+    response.end('hi');
+})
+```
+
+## response 对象
