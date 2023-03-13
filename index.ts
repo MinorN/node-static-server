@@ -7,10 +7,12 @@ const server = http.createServer();
 
 // 监听request事件
 server.on('request', (request: IncomingMessage, response: ServerResponse) => {
-    console.log(response.constructor);
-    console.log('请求了');
-    console.log(request.httpVersion);
+    console.log('request.method')
+    console.log(request.method);
+    console.log('request.url')
     console.log(request.url);
+    console.log('request.headers')
+    console.log(request.headers);
     // 请求者返回给hi
     response.end('hi');
 });
