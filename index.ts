@@ -2,6 +2,7 @@ import * as http from 'http';
 import {IncomingMessage, ServerResponse} from 'http';
 import * as fs from 'fs';
 import * as p from 'path';
+import * as url from 'url';
 
 
 const server = http.createServer();
@@ -12,8 +13,12 @@ const publicDir = p.resolve(__dirname, 'public');
 
 // 监听request事件
 server.on('request', (request: IncomingMessage, response: ServerResponse) => {
-    const {method, url, headers} = request;
-    switch (url) {
+    const {method, url: path, headers} = request;
+    // 该语法相当于从request内读取url赋值给path
+    // console.log(url.parse(path!))
+    // 刷新网页，可以看到命令行里面pathname就是我们需要的
+    const {pathname, search} = url.parse(path!);
+    switch (pathname) {
         case '/index.html':
             // __dirname 是当前目录
             response.setHeader('Content-Type', 'text/html;charset-utf-8');
@@ -42,10 +47,13 @@ server.on('request', (request: IncomingMessage, response: ServerResponse) => {
                 response.end(data.toString());
             });
             break;
+        default:
+            response.statusCode = 404;
+            response.end();
     }
 });
 
 // 监听本机端口
 server.listen(8888, () => {
-    console.log(server.address());
+    // console.log(server.address());
 });

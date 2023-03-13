@@ -111,3 +111,70 @@ server.listen(8888, () => {
 
 // 浏览器访问 http://localhost:8888/index.html
 ```
+
+## 目标二： 处理查询参数
+我们发现，当在浏览器地址输入 `?q=1` 直接就挂掉了，所以需要处理查询参数
+可以打印以下 `url` 发现 `url` 居然带着 q
+```ts
+import * as http from 'http';
+import {IncomingMessage, ServerResponse} from 'http';
+import * as fs from 'fs';
+import * as p from 'path';
+import * as url from 'url';
+
+
+const server = http.createServer();
+
+// 找到public目录的路径
+// resolve 会将两个路径拼接在一起，比如 p.resolve('/home','index.html')会返回 /home/index.html
+const publicDir = p.resolve(__dirname, 'public');
+
+// 监听request事件
+server.on('request', (request: IncomingMessage, response: ServerResponse) => {
+    const {method, url: path, headers} = request;
+    // 该语法相当于从request内读取url赋值给path
+    // console.log(url.parse(path!))
+    // 刷新网页，可以看到命令行里面pathname就是我们需要的
+    const {pathname, search} = url.parse(path!);
+    switch (pathname) {
+        case '/index.html':
+            // __dirname 是当前目录
+            response.setHeader('Content-Type', 'text/html;charset-utf-8');
+            fs.readFile(p.resolve(publicDir, 'index.html'), (error, data) => {
+                if (error) {
+                    throw error;
+                }
+                response.end(data.toString());
+            });
+            break;
+        case '/style.css':
+            response.setHeader('Content-Type', 'text/css;charset-utf-8');
+            fs.readFile(p.resolve(publicDir, 'style.css'), (error, data) => {
+                if (error) {
+                    throw error;
+                }
+                response.end(data.toString());
+            });
+            break;
+        case '/main.js':
+            response.setHeader('Content-Type', 'text/javascript;charset-utf-8');
+            fs.readFile(p.resolve(publicDir, 'main.js'), (error, data) => {
+                if (error) {
+                    throw error;
+                }
+                response.end(data.toString());
+            });
+            break;
+        default:
+            response.statusCode = 404;
+            response.end();
+    }
+});
+
+// 监听本机端口
+server.listen(8888, () => {
+    // console.log(server.address());
+});
+```
+
+## 目标三：匹配任意文件
