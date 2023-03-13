@@ -1,0 +1,11 @@
+{
+  "name": "node-static-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:MinorN/node-static-server.git",
+  "author": "qijiajun <1481700559@qq.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^18.15.1"
+  }
+}
