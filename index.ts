@@ -1,39 +1,45 @@
 import * as http from 'http';
 import {IncomingMessage, ServerResponse} from 'http';
+import * as fs from 'fs';
+import * as p from 'path';
 
-console.log('hi');
 
 const server = http.createServer();
 
+const publicDir = p.resolve(__dirname, 'public');
+
 // 监听request事件
 server.on('request', (request: IncomingMessage, response: ServerResponse) => {
-    console.log('request.method');
-    console.log(request.method);
-    console.log('request.url');
-    console.log(request.url);
-    console.log('request.headers');
-    console.log(request.headers);
-
-    // 获取请求体数据
-    const array: any = [];
-    request.on('data', (chunk) => {
-        console.log(chunk);
-        array.push(chunk);
-    });
-    request.on('end', () => {
-        const body = Buffer.concat(array).toString();
-        console.log('body');
-        console.log(body);
-        // 可以修改 response 的 statusCode
-        response.statusCode = 404
-        response.setHeader('minorN','hello ,I am minorN')
-
-        response.write('1\n')
-        response.write('2\n')
-        response.write('3\n')
-
-        response.end();
-    });
+    const {method, url, headers} = request;
+    switch (url) {
+        case '/index.html':
+            // __dirname 是当前目录
+            fs.readFile(p.resolve(publicDir, 'index.html'), (error, data) => {
+                if (error) {
+                    throw error;
+                }
+                response.end(data.toString());
+            });
+            break;
+        case '/style.css':
+            response.setHeader('Content-Type', 'text/css;charset-utf-8');
+            fs.readFile(p.resolve(publicDir, 'style.css'), (error, data) => {
+                if (error) {
+                    throw error;
+                }
+                response.end(data.toString());
+            });
+            break;
+        case '/main.js':
+            response.setHeader('Content-Type', 'text/javascript;charset-utf-8');
+            fs.readFile(p.resolve(publicDir, 'main.js'), (error, data) => {
+                if (error) {
+                    throw error;
+                }
+                response.end(data.toString());
+            });
+            break;
+    }
 });
 
 // 监听本机端口
