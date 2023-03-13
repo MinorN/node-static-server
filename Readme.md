@@ -43,3 +43,16 @@ request.on('end',()=>{
 ```
 
 ## response 对象
+可以去修改 response 的 statusCode
+也可以往 response 上添加内容，比如:
+```ts
+response.setHeader('minorN','hello ,I am minorN')
+```
+也可以修改返回体
+```ts
+response.end('xxx');
+// 也可以写入
+response.write('1\n')
+response.write('2\n')
+response.write('3\n')
+```

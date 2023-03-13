@@ -25,8 +25,14 @@ server.on('request', (request: IncomingMessage, response: ServerResponse) => {
         console.log('body');
         console.log(body);
         // 可以修改 response 的 statusCode
-        response.statusCode = 400
-        response.end(`你的输入是${body}`);
+        response.statusCode = 404
+        response.setHeader('minorN','hello ,I am minorN')
+
+        response.write('1\n')
+        response.write('2\n')
+        response.write('3\n')
+
+        response.end();
     });
 });
 
