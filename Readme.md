@@ -269,3 +269,12 @@ server.listen(8888, () => {
     // console.log(server.address());
 });
 ```
+## 目标五：处理非GET请求
+只需要对 `method` 就进行判断即可
+```ts
+if(method !== 'GET'){
+    response.statusCode = 405
+    response.end('this is a static server')
+    return
+}
+```

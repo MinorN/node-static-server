@@ -18,6 +18,11 @@ server.on('request', (request: IncomingMessage, response: ServerResponse) => {
     // console.log(url.parse(path!))
     // 刷新网页，可以看到命令行里面pathname就是我们需要的
     const {pathname, search} = url.parse(path!);
+    if(method !== 'GET'){
+        response.statusCode = 405
+        response.end('this is a static server')
+        return
+    }
     // __dirname 是当前目录
     const filename = pathname?.substr(1) || 'index.html'
     // response.setHeader('Content-Type', 'text/html;charset-utf-8');
