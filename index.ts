@@ -11,6 +11,8 @@ const server = http.createServer();
 // resolve 会将两个路径拼接在一起，比如 p.resolve('/home','index.html')会返回 /home/index.html
 const publicDir = p.resolve(__dirname, 'public');
 
+let cacheAge = 3600 * 24 * 365; // 缓存时间
+
 // 监听request事件
 server.on('request', (request: IncomingMessage, response: ServerResponse) => {
     const {method, url: path, headers} = request;
@@ -18,31 +20,32 @@ server.on('request', (request: IncomingMessage, response: ServerResponse) => {
     // console.log(url.parse(path!))
     // 刷新网页，可以看到命令行里面pathname就是我们需要的
     const {pathname, search} = url.parse(path!);
-    if(method !== 'GET'){
-        response.statusCode = 405
-        response.end('this is a static server')
-        return
+    if (method !== 'GET') {
+        response.statusCode = 405;
+        response.end('this is a static server');
+        return;
     }
     // __dirname 是当前目录
-    const filename = pathname?.substr(1) || 'index.html'
+    const filename = pathname?.substr(1) || 'index.html';
     // response.setHeader('Content-Type', 'text/html;charset-utf-8');
     fs.readFile(p.resolve(publicDir, filename), (error, data) => {
         if (error) {
-            console.log(error)
-            if(error.errno === -4058){
+            console.log(error);
+            if (error.errno === -4058) {
                 // 这种错误才是文件不存在
-                response.statusCode = 404
-                fs.readFile(p.resolve(publicDir,'404.html'),(error,data)=>{
-                    response.end(data)
-                })
-            }else if(error.errno === -4068){
-                response.statusCode = 403
-                response.end('无权查看目录内容')
-            }else{
-                response.statusCode = 500
-                response.end('服务器繁忙')
+                response.statusCode = 404;
+                fs.readFile(p.resolve(publicDir, '404.html'), (error, data) => {
+                    response.end(data);
+                });
+            } else if (error.errno === -4068) {
+                response.statusCode = 403;
+                response.end('无权查看目录内容');
+            } else {
+                response.statusCode = 500;
+                response.end('服务器繁忙');
             }
-        }else{
+        } else {
+            response.setHeader('Cache-Control', `public,max-age=${cacheAge}`);
             response.end(data);
         }
     });

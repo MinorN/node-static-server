@@ -278,3 +278,9 @@ if(method !== 'GET'){
     return
 }
 ```
+## 任务六：添加缓存
+刷新页面发现每次请求相同页面都会重新请求
+使用 `Cache-Control`，请求成功后，先设置`Cache-Control`再响应
+```ts
+response.setHeader('Cache-Control','public,max-age=31536000')
+```
